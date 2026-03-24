@@ -1,0 +1,20 @@
+EP-03:
+- Create a repository.
+- initialize the repo.
+- node_modules, package.json, package-lock.json.
+- Install Express.
+- Create a server.
+- Listen to port 7777.
+- Write request handlers for /test, /hello
+- install nodemon and update script inside package.json.
+- What are dependencies ?
+- What is the use -g while npm install ?
+- Difference b/w caret and tilde (^ vs ~) ?
+
+EP-04:
+- initialize git
+- .gitignore
+- Create a remote repo on github.
+- Push all code to remote origin.
+- Play with routes and route extentions. ex : /hello, / , /hello2
+- Order of the routs matter a lot. 
