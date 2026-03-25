@@ -2,20 +2,29 @@ const express = require("express");
 
 const app = express(); //Creating a server/application instance.
 
-// * work for :- /user?userid=123&name=Rishav&password=123456 (Here each parameter is required) - Query Parameters
-app.get("/user", (req, res) => {
-    console.log(req.query.userid);
-    console.log(req.query);
-    res.send({firstName : "Rishav", lastName : "Mishra"});
-});
+//app.use("/user", rh, [rh2, rh3], rh4, rh5);
 
-// * work for :- /user/123/Rishav/123456 (Here each parameter is required) - Route Parameters
-app.get("/user/:userid/:name/:password", (req, res) => {
-    console.log(req.params);
-    console.log(req.params.userid);
-    console.log(req.params.name);
-    console.log(req.params.password);
-    res.send({firstName : "Rishav", lastName : "Mishra"});
+app.use(
+    "/user",
+    [(req, res, next) => {
+        console.log("Handling the route user");
+        next();
+        //res.send("Response!!!");
+},  (req, res, next) => {
+        console.log("Handling the route user 2");
+        //res.send("2nd Response!!!");
+        next();
+},  (req, res, next) => {
+        console.log("Handling the route user 3");
+        //res.send("3rd Response!!!");
+        next();
+}],  (req, res, next) => {
+        console.log("Handling the route user 4");
+        //res.send("4th Response!!!");
+        next();
+},  (req, res) => {
+        console.log("Handling the route user 5");
+        res.send("5th Response!!!");
 });
 
 
