@@ -2,29 +2,21 @@ const express = require("express");
 
 const app = express(); //Creating a server/application instance.
 
-//app.use("/user", rh, [rh2, rh3], rh4, rh5);
+// GET/ user => It checks all the app.xxx (matching route) functions.
 
-app.use(
-    "/user",
-    [(req, res, next) => {
-        console.log("Handling the route user");
-        next();
-        //res.send("Response!!!");
-},  (req, res, next) => {
-        console.log("Handling the route user 2");
-        //res.send("2nd Response!!!");
-        next();
-},  (req, res, next) => {
-        console.log("Handling the route user 3");
-        //res.send("3rd Response!!!");
-        next();
-}],  (req, res, next) => {
-        console.log("Handling the route user 4");
-        //res.send("4th Response!!!");
-        next();
-},  (req, res) => {
-        console.log("Handling the route user 5");
-        res.send("5th Response!!!");
+// If you are sending a request to the express server. It will try to go one by one check all these methods(use, get) if it finds its matchings it will call that function and it will keep on going one after the other to these route handlers and middlewares till it reaches the function which actually sends the response back and actually that function is known as request handler.
+app.use("/", (req, res, next) => {
+    //res.send("Handling / route");
+    next();
+});
+
+app.get("/user", (req, res, next) => {
+    //res.send("Handling /user route");
+    next();
+},(req, res, next) => {
+    next();
+},(req, res, next) => {
+    res.send("2nd Route Handler");
 });
 
 
