@@ -1,5 +1,5 @@
 
-//Handle Auth Middleware for all request GET, POST, PATCH, ....
+//Handle Auth Middleware for all request GET, POST, PATCH,....
 
 const adminAuth = (req, res, next) => {
     console.log("Admin auth is getting checked!!");
@@ -13,17 +13,16 @@ const adminAuth = (req, res, next) => {
 };
 
 const userAuth = (req, res, next) => {
-    console.log("User auth is getting checked!!");
-    const token = "xyz";
-    const isUserAuthorized = token === "xyz";
-    if(!isUserAuthorized) {
-        res.status(401).send("Unauthorized request");
-    } else {
+    const token = "abc";
+    const isUserAutherized = token === "abc";
+
+    if(isUserAutherized){
         next();
     }
+    else{
+        res.status(401).send("User UnAuthorized");
+    }
 };
-
-
 
 module.exports ={
     adminAuth,
