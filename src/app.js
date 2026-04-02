@@ -1,26 +1,21 @@
 const express = require("express");
 const app = express();
+const dns = require("dns");
+dns.setServers(["8.8.8.8", "1.1.1.1"]);
 
-app.get("/getUserData", (req, res) => {
-    // try{
-        //Logic of DB call and get user data
-        throw new Error("Error occurred while fetching user data");
-        res.send("User data sent");
-    // }
-    // catch(error){
-    //     res.status(500).send("Some Error occurred contact support team");
-    // }
+const connectDB = require("./config/database");
 
-});
+connectDB()
+    .then(() => {
+        console.log("Database connected Succesfully...");
+        app.listen(7777, () =>{
+            console.log("Server is continuiously listening on Port 7777...")
+        })
+    })
+    .catch((err) => {
+        console.log("Database cannot be connected!!!", err);
+    })
 
-// always call the error handling middleware at the end of the code.
-app.use("/",(err, rq, res, next) =>{
-    if (err) {
-        console.error(err);
-        res.status(500).send("Something went wrong");
-    }
-});
 
-app.listen(7777,() => {
-    console.log("Server is continuously listening on port 7777...")
-})
+
+// Note : First connect to the Database and then listen to the request.
