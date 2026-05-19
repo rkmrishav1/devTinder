@@ -84,40 +84,44 @@ app.delete("/user", async (req, res) => {
     }
 })
 
-// Update a user in the database
-// app.patch("/user", async (req, res) => {
-//     const userId = req.body.userId;
-//     const data = req.body;
-
-//     try {
-//         await User.findByIdAndUpdate({_id : userId}, data, {
-//             returnDocument: "before"
-//         })
-//         console.log(userId, data);
-//         res.send("User updated successfully");
-//     }
-//     catch(err){
-//         res.status(400).send("Something went wrong");
-//     }
-// })
-
-// Update a user by emailId in the database
+//Update a user in the database
 app.patch("/user", async (req, res) => {
-    // findOneAndUpdate(filter, update, options) 
-    const emailId = req.body.emailId;
+    const userId = req.params?.userId;// we dont want to update the userId but we need userId to update other fields.
+    //const userId = req.body.userId;
     const data = req.body;
+
     try {
-        const user = await User.findOneAndUpdate({emailId : emailId}, data, {
-            returnDocument: "after"
-        });
-        console.log(emailId, data);
-        res.send(user);
+        await User.findByIdAndUpdate({_id : userId}, data, {
+            returnDocument: "after",
+            runValidators : true
+        })
+        console.log(userId, data);
+        res.send("User updated successfully");
     }
     catch(err){
         res.status(400).send("Something went wrong");
     }
-
 })
+
+// Update a user by emailId in the database
+// app.patch("/user", async (req, res) => {
+//     // findOneAndUpdate(filter, update, options) 
+//     const emailId = req.body.emailId;
+//     const data = req.body;
+//     try {
+//         const user = await User.findOneAndUpdate({emailId : emailId}, data, {
+//             returnDocument: "before",
+//             runValidaters : true
+//         });
+//         console.log(emailId, data);
+//         res.send(user);
+//     }
+//     catch(err){
+//         res.status(400).send("Update failed: " + err.message);
+//     }
+
+// })
+
 
 
 connectDB()
