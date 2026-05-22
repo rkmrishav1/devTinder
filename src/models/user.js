@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const validator = require("validator");
 
 // Schema is the identity for that collection.It tells what are the information about the user are we storing.
 const userSchema = new mongoose.Schema({
@@ -16,11 +17,21 @@ const userSchema = new mongoose.Schema({
         required : true,
         trim : true,
         unique : true,
-        lowercase : true
+        lowercase : true,
+        validate(value){
+            if (!validator.isEmail(value)){
+                throw new Error ("Invalid Email address " + value);
+            }
+        }
     },
     password : {
         type : String,
-        required : true
+        required : true,
+        validate(value){
+            if (!validator.isStrongPassword(value)){
+                throw new Error ("Enter a strong password : " + value);
+            }
+        }
     },
     age : {
         type : Number,
@@ -37,7 +48,12 @@ const userSchema = new mongoose.Schema({
     },
     photoUrl : {
         type : String,
-        default : "https://vidhilegalpolicy.in/wp-content/uploads/2025/04/iStock-1481741599.jpg"
+        default : "https://vidhilegalpolicy.in/wp-content/uploads/2025/04/iStock-1481741599.jpg",
+        validate(value){
+            if (!validator.isURL(value)){
+                throw new Error ("Invalid URL " + value);
+            }
+        }
     },
     about : {
         type : String,
