@@ -85,12 +85,24 @@ app.delete("/user", async (req, res) => {
 })
 
 //Update a user in the database
-app.patch("/user", async (req, res) => {
+app.patch("/user/:userId", async (req, res) => {
     const userId = req.params?.userId;// we dont want to update the userId but we need userId to update other fields.
     //const userId = req.body.userId;
     const data = req.body;
 
     try {
+        // This is API level validation
+        const ALLOWED_UPDATES = ["photoUrl", "password", "about", "gender", "age", "skills"]
+        const isUpdateAllowed = Object.keys(data).every((key) => 
+            ALLOWED_UPDATES.includes(key)    
+        )
+
+        if (!isUpdateAllowed) {
+            throw new Error("Update not allowed");
+        }
+        if (data.skills.length > 10){
+            throw new Error("Maximum 10 skills allowed");
+        }
         await User.findByIdAndUpdate({_id : userId}, data, {
             returnDocument: "after",
             runValidators : true
@@ -99,7 +111,7 @@ app.patch("/user", async (req, res) => {
         res.send("User updated successfully");
     }
     catch(err){
-        res.status(400).send("Something went wrong");
+        res.status(400).send("UPDATE FAILED: " + err.message);
     }
 })
 
