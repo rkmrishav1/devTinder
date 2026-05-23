@@ -1,6 +1,8 @@
 const express = require("express");
 const app = express();
 const connectDB = require("./config/database");
+const {validateSignUpData} = require ('./utils/validation')
+const bcrypt = require ("bcrypt");
 
 const User = require("./models/user");
 
@@ -12,20 +14,29 @@ app.use(express.json()); // Parse JSON request bodies. It is a middleware
 
 app.post("/signup", async (req, res) => {
     
-    const user = new User(req.body);// & now req.body is 
-    // const userObj = {
-    //     firstName : "Rishav",
-    //     lastName : "Mishra",
-    //     emailID : "rkrishavmishra@gmail.com",
-    //     password : "hello@1234",
-    // }
-    console.log(req.body);
+    
     try{
+        // & Before creating a new user we must follow these steps:->
+    // 1.) Validate the input data because NEVER TRUST req.body(because client can send any malicious data).
+        validateSignUpData(req);
+
+        const {firstName, lastName, emailId, password} = req.body;
+    // 2.) Encrypt the password before saving it to the database.
+        const passwordHash = await bcrypt.hash(password, 10);
+        
+    // 3.) Create the user in the database.
+        const user = new User({
+            firstName,
+            lastName,
+            emailId,
+            password : passwordHash,// Save encrypted password.
+            }
+        );
         await user.save()
         res.send("User added Successfully...");
     }
     catch(err){
-        res.status(400).send("Error in saving the user :" + err.message);
+        res.status(400).send("ERROR :" + err.message);
     }
 })
 
@@ -45,19 +56,6 @@ app.get("/users", async (req, res) => {
     catch (err){
         res.status(400).send("Something went wrong");
     }
-    // try{
-    //     const userEmail = req.body.emailId;
-    //     const users = await User.find({emailId : userEmail});
-    //     if (users.length === 0){
-    //         res.status(404).send("User not found");
-    //     }
-    //     else{
-    //         res.send(users);
-    //     }
-    // }
-    // catch(err){
-    //     res.status(400).send("Something went wrong");
-    // }
 })
 
 // Feed API - GET /feed - get all the users from the Database.
@@ -114,27 +112,6 @@ app.patch("/user/:userId", async (req, res) => {
         res.status(400).send("UPDATE FAILED: " + err.message);
     }
 })
-
-// Update a user by emailId in the database
-// app.patch("/user", async (req, res) => {
-//     // findOneAndUpdate(filter, update, options) 
-//     const emailId = req.body.emailId;
-//     const data = req.body;
-//     try {
-//         const user = await User.findOneAndUpdate({emailId : emailId}, data, {
-//             returnDocument: "before",
-//             runValidaters : true
-//         });
-//         console.log(emailId, data);
-//         res.send(user);
-//     }
-//     catch(err){
-//         res.status(400).send("Update failed: " + err.message);
-//     }
-
-// })
-
-
 
 connectDB()
     .then(() => {
