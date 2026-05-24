@@ -1,30 +1,33 @@
+const jwt = require('jsonwebtoken');
+const User = require("../models/user");
 
-//Handle Auth Middleware for all request GET, POST, PATCH,....
+const userAuth = async (req, res, next) => {
+    try{
+        // Read the token from the req cookies.
+        const { token } = req.cookies;
+        if (!token){
+            throw new Error('Token is not valid !!!!!!!');
+        }
 
-const adminAuth = (req, res, next) => {
-    console.log("Admin auth is getting checked!!");
-    const token = "xyz";
-    const isAdminAuthorized = token === "xyz";
-    if(!isAdminAuthorized) {
-        res.status(401).send("Unauthorized request");
-    } else {
+        //Validate the token.
+        const decodedObj = await jwt.verify(token, "Rishav@123");
+        const { _id } = decodedObj;// Getting the id from decodedObj.
+
+        // Find the user.
+        const user = await User.findById(_id);
+        if (!user){
+            throw new Error("User not Found!!!")
+        }
+        req.user = user; // Attach this user to my request object.
         next();
     }
-};
-
-const userAuth = (req, res, next) => {
-    const token = "abc";
-    const isUserAutherized = token === "abc";
-
-    if(isUserAutherized){
-        next();
+    catch(err){
+        res.status(400).send("ERROR : " + err.message);
     }
-    else{
-        res.status(401).send("User UnAuthorized");
-    }
-};
+
+
+}
 
 module.exports ={
-    adminAuth,
-    userAuth
+    userAuth,
 };
