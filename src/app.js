@@ -3,14 +3,16 @@ const app = express();
 const connectDB = require("./config/database");
 const {validateSignUpData} = require ('./utils/validation')
 const bcrypt = require ("bcrypt");
+const cookieParser = require ("cookie-parser");
+const jwt = require("jsonwebtoken");
 
 const User = require("./models/user");
 
 const dns = require("dns");
 dns.setServers(["8.8.8.8", "1.1.1.1"]);
 
-app.use(express.json()); // Parse JSON request bodies. It is a middleware
-// & This express.json middleware will read the json object, it will convert it into a JavaScript object and will add it to the req.body. Now i can read this body, get the data
+app.use(cookieParser());
+app.use(express.json());
 
 app.post("/signup", async (req, res) => {
     
@@ -49,11 +51,40 @@ app.post("/login", async (req, res) => {
         }
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (isPasswordValid){
+            // Create a JWT token 
+            const token = await jwt.sign({_id : user._id}, "Rishav@123");
+            // Add the token to cookie and send response back to the user 
+            res.cookie("token", token);
             res.send("Login Successful....");
         }
         else{
             throw new Error ("Invalid credentials !!!")
         }
+    }
+    catch(err){
+        res.status(400).send("ERROR : " + err.message);
+    }
+})
+
+app.get("/profile", async (req, res) => {
+    try{
+        const cookies = req.cookies;
+        const { token } = cookies;
+
+        if (!token) {
+            throw new Error ('Invalid Token');
+        }
+
+        const decodedMessage = await jwt.verify(token, "Rishav@123");
+        const { _id } = decodedMessage;
+
+        const user = await User.findById(_id);
+
+        if (!user){
+            throw new Error("User does not exist")
+        }
+        res.send("Profile data for user: " + user.firstName);
+
     }
     catch(err){
         res.status(400).send("ERROR : " + err.message);
