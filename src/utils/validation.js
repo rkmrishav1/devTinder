@@ -18,8 +18,7 @@ const validateEditProfileData = (req) =>{
 
     const {firstName, lastName, emailId, photoUrl, about, gender, age, skills} = req.body;
 
-
-    allowedEditFields = [
+    const allowedEditFields = [
         "firstName",
         "lastName",
         "photoUrl",
@@ -38,7 +37,7 @@ const validateEditProfileData = (req) =>{
         throw new Error("About should be less than 100 characters")
     }
 
-    if (gender && !["Male", "Female", "Other"].includes(gender)){
+    if (gender && (!["Male", "Female", "Other"].includes(gender))){
         throw new Error ("Invalid Gender!!!")
     }
 
@@ -49,8 +48,17 @@ const validateEditProfileData = (req) =>{
     return isEditAllowed;
 }
 
+const validatePassword = (password) => {
+    if (!validator.isStrongPassword(password)) {
+        throw new Error(
+            "Password must contain uppercase, lowercase, number and special character"
+        );
+    }
+};
+
 module.exports = {
     validateEditProfileData,
-    validateSignUpData
+    validateSignUpData,
+    validatePassword
     
 }

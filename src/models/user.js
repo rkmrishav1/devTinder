@@ -30,11 +30,11 @@ const userSchema = new mongoose.Schema({
     password : {
         type : String,
         required : true,
-        // validate(value){
-        //     if (!validator.isStrongPassword(value)){
-        //         throw new Error ("Enter a strong password : " + value);
-        //     }
-        // }
+        validate(value){
+            if (!validator.isStrongPassword(value)){
+                throw new Error ("Enter a strong password : " + value);
+            }
+        }
     },
     age : {
         type : Number,
@@ -42,12 +42,8 @@ const userSchema = new mongoose.Schema({
     },
     gender : {
         type : String,
-        // by default this validate method will only be called when this new document is created.If I am trying to patch an existing data then it won't work by default we will have to enable it explicitly.
-        validate(value){
-            if(!["Male", "Female", "Other"].includes(value)){
-                throw new Error("Invalid gender");
-            }
-        }
+        enum : ["Male", "Female", "Other"],
+        message : `{VALUE} is not a gender type`
     },
     photoUrl : {
         type : String,
