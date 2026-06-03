@@ -20,7 +20,10 @@ const connectionRequestSchema = new mongoose.Schema(
         }
     }
 );
-// This is a kind of middleware. it will be called everytime the connection request will be saved.That is way name is pre -> pre-save.
+// unique attribute is bydefault indexed.
+// Create a compound index on fromUserId and toUserId. It makes querying more efficient.
+connectionRequestSchema.index({ fromUserId: 1, toUserId: 1 });
+// This is a kind of middleware. it will be called everytime the connection request will be saved.That is why name is pre -> pre-save.
 connectionRequestSchema.pre("save", function () {
     const connectionRequest = this
 
@@ -29,7 +32,8 @@ connectionRequestSchema.pre("save", function () {
         throw new Error ("Cannot send request to yourself!");
     }
     
-})
+});
+
 
 const ConnectionRequest = mongoose.model('ConnectionRequest', connectionRequestSchema);
 
